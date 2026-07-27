@@ -18,11 +18,29 @@ branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
-def upgrade():
-    op.execute(
-        "ALTER TYPE paymentstatus RENAME VALUE 'success' TO 'completed';"
-    )
+# def upgrade():
+#     op.execute(
+#         "ALTER TYPE paymentstatus RENAME VALUE 'success' TO 'completed';"
+#     )
 
+
+def upgrade() -> None:
+    op.execute(
+        """
+        DO $$
+        BEGIN
+            IF EXISTS (
+                SELECT 1 
+                FROM pg_enum 
+                JOIN pg_type ON pg_enum.enumtypid = pg_type.oid 
+                WHERE pg_type.typname = 'paymentstatus' 
+                  AND pg_enum.enumlabel = 'success'
+            ) THEN
+                ALTER TYPE paymentstatus RENAME VALUE 'success' TO 'completed';
+            END IF;
+        END $$;
+        """
+    )
 
 def downgrade():
     op.execute(
