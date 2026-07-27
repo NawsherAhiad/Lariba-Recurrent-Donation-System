@@ -1,8 +1,12 @@
+import os
+from pathlib import Path
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+
 from app.api.donation import router as donation_router
 from app.api.bkash import router as bkash_router
-from fastapi import FastAPI
-
 from app.api.health import router as health_router
 from app.core.config import settings
 
@@ -14,37 +18,25 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://127.0.0.1:5500",
-        "http://localhost:5500",
-        "http://127.0.0.1:5501",   # Add this
-        "http://localhost:5501",   # Optional
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(
-    health_router,
-    prefix="/api/v1",
-    tags=["Health"],
-)
+# API Routers
+app.include_router(health_router, prefix="/api/v1", tags=["Health"])
+app.include_router(donation_router, prefix="/api/v1", tags=["Donations"])
+app.include_router(bkash_router, prefix="/api/v1", tags=["bKash"])
 
-app.include_router(
-    donation_router,
-    prefix="/api/v1",
-    tags=["Donations"],
-)
+BASE_DIR = Path(__file__).resolve().parent.parent
+FRONTEND_DIR = BASE_DIR / "frontend"
 
-app.include_router(
-    bkash_router,
-    prefix="/api/v1",
-    tags=["bKash"],
-)
-
+# Serve donation.html directly when opening the root site '/'
 @app.get("/")
-async def root():
-    return {
-        "message": f"Welcome to {settings.APP_NAME}"
-    }
+async def serve_root():
+    return FileResponse(FRONTEND_DIR / "donation.html")
+
+# Mount the rest of the frontend directory for static assets (CSS, JS, etc.)
+if FRONTEND_DIR.exists():
+    app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
