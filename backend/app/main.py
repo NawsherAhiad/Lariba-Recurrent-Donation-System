@@ -29,7 +29,8 @@ app.include_router(health_router, prefix="/api/v1", tags=["Health"])
 app.include_router(donation_router, prefix="/api/v1", tags=["Donations"])
 app.include_router(bkash_router, prefix="/api/v1", tags=["bKash"])
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 FRONTEND_DIR = BASE_DIR / "frontend"
 
 # Serve donation.html directly when opening the root site '/'
