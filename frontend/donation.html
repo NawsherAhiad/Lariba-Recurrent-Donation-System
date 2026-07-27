@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LARIBA - Donation Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-50 font-sans text-slate-800 antialiased">
+
+    <nav class="sticky top-0 z-50 border-b border-slate-100 bg-white/90 backdrop-blur-md">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl font-black tracking-tight text-emerald-600">LARIBA</span>
+                <!-- <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Clone</span> -->
+            </div>
+            <div class="hidden space-x-8 text-sm font-medium text-slate-600 md:flex">
+                <a href="#" class="text-emerald-600 transition">Home</a>
+                <a href="#" class="hover:text-emerald-600 transition">Our Projects</a>
+                <a href="#" class="hover:text-emerald-600 transition">About Us</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div class="grid gap-12 lg:grid-cols-12 lg:items-center">
+            
+            <div class="space-y-6 lg:col-span-7">
+                <span class="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-700">
+                    Emergency Relief & Welfare
+                </span>
+                <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl md:text-6xl">
+                    Your <span class="text-emerald-600">Sadaqah</span> Can Change a Life Today
+                </h1>
+                <p class="max-w-2xl text-lg leading-relaxed text-slate-600">
+                    LARIBA serves humanity through education, health, and disaster response. 
+                    Fill out the form to make a secure donation instantly using your bKash wallet.
+                </p>
+                
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div class="flex items-center space-x-3 text-slate-700">
+                        <svg class="h-5 w-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" /></svg>
+                        <span class="text-sm font-medium">100% Transparent Distribution</span>
+                    </div>
+                    <div class="flex items-center space-x-3 text-slate-700">
+                        <svg class="h-5 w-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" /></svg>
+                        <span class="text-sm font-medium">Secure bKash Tokenized Checkout</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-5">
+                <div class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-xl shadow-slate-100">
+                    <div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-6 text-white">
+                        <h2 class="text-xl font-bold">Secure Donation</h2>
+                        <p class="mt-1 text-sm text-emerald-100">Fast processing via bKash Payment</p>
+                    </div>
+
+                    <form id="donationForm" class="p-6 space-y-5">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Full Name</label>
+                            <input type="text" id="name" required placeholder="e.g. Nawsher Ahiad" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20" />
+                        </div>
+
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Email Address</label>
+                                <input type="email" id="email" required placeholder="name@example.com" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Phone Number</label>
+                                <input type="tel" id="phone" required placeholder="01XXXXXXXXX" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20" />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Donation Amount (BDT)</label>
+                            <div class="grid grid-cols-5 gap-2 mb-3">
+                                <button type="button" onclick="setAmount('500', false, this)" class="amount-btn rounded-md py-2 text-xs font-bold bg-slate-50 text-slate-600 border border-slate-200 hover:bg-emerald-100">৳500</button>
+                                <button type="button" onclick="setAmount('1000', false, this)" class="amount-btn rounded-md py-2 text-xs font-bold bg-slate-50 text-slate-600 border border-slate-200 hover:bg-emerald-100">৳1000</button>
+                                <button type="button" onclick="setAmount('2000', false, this)" class="amount-btn rounded-md py-2 text-xs font-bold bg-slate-50 text-slate-600 border border-slate-200 hover:bg-emerald-100">৳2000</button>
+                                <button type="button" onclick="setAmount('5000', false, this)" class="amount-btn rounded-md py-2 text-xs font-bold bg-slate-50 text-slate-600 border border-slate-200 hover:bg-emerald-100">৳5000</button>
+                                <button type="button" onclick="setAmount('', true, this)" class="amount-btn rounded-md py-2 text-xs font-bold bg-slate-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100">Other</button>
+                            </div>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 font-semibold text-slate-400">৳</span>
+                                    <input type="number" id="amount" required min="10" step="0.01" placeholder="Enter custom amount" class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 pl-8 pr-4 text-sm font-semibold focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20" />
+                            </div>
+                        </div>
+
+                        <div class="grid gap-3 sm:grid-cols-2">
+                            <button type="button" id="resetBtn" class="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-emerald-50 py-3 text-sm  font-semibold text-slate-700 shadow-md hover:bg-slate-200 transition">
+                                Reset Form
+                            </button>
+                            <button type="submit" id="submitBtn" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-50 py-3 text-sm font-bold text-pink shadow-md hover:bg-pink-500 focus:outline-none transition disabled:opacity-100">
+                                <img src="bkash.png" alt="bKash logo" class="h-10 w-auto" />
+                                <span id="btnText">Pay With bKash</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </main>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/validation.js"></script>
+    <script src="js/donation.js"></script>
+    
+</body>
+</html>
