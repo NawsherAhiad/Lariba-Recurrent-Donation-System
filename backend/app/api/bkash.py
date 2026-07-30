@@ -13,6 +13,8 @@ from sqlalchemy.orm import Session
 
 from app.database.database import get_db
 
+from fastapi import Request
+
 router = APIRouter(
     prefix="/bkash",
     tags=["bKash"],
@@ -64,6 +66,7 @@ async def test_payment(
 
 @router.get("/callback")
 async def callback(
+    request: Request,
     paymentID: str = Query(...),
     status: str = Query(...),
     db: Session = Depends(get_db),
