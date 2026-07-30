@@ -2,14 +2,47 @@ document.addEventListener("DOMContentLoaded", () => {
     // Read query parameters from URL redirect
     const params = new URLSearchParams(window.location.search);
 
-    const amount = params.get("amount") || "0";
-    const donorName = params.get("donor_name") || "Valued Donor";
-    const donationId = params.get("donation_id") ? `DON-${params.get("donation_id")}` : "N/A";
-    const transactionId = params.get("transaction_id") || params.get("trx") || "N/A";
-    const paymentMethod = params.get("payment_method") || "bKash";
-    const rawDate = params.get("date");
+    // 1. Amount
+    const rawAmount = params.get("amount") || "0";
+    const amountEl = document.getElementById("amount");
+    if (amountEl) {
+        amountEl.textContent = `৳${rawAmount}`;
+    }
 
-    // Format date string safely
+    // 2. Donor Name
+    const donorName = params.get("donor_name") || params.get("name") || "Valued Donor";
+    const donorEl = document.getElementById("donorName");
+    if (donorEl) {
+        donorEl.textContent = donorName;
+    }
+
+    // 3. Donation ID
+    const rawDonationId = params.get("donation_id") || params.get("donationID");
+    let displayDonationId = "N/A";
+    if (rawDonationId) {
+        displayDonationId = rawDonationId.startsWith("DON-") ? rawDonationId : `DON-${rawDonationId}`;
+    }
+    const donationEl = document.getElementById("donationId");
+    if (donationEl) {
+        donationEl.textContent = displayDonationId;
+    }
+
+    // 4. Transaction ID
+    const transactionId = params.get("transaction_id") || params.get("trxID") || params.get("trx") || "N/A";
+    const trxEl = document.getElementById("transactionId");
+    if (trxEl) {
+        trxEl.textContent = transactionId;
+    }
+
+    // 5. Payment Method
+    const paymentMethod = params.get("payment_method") || "bKash";
+    const methodEl = document.getElementById("val-method");
+    if (methodEl) {
+        methodEl.textContent = paymentMethod;
+    }
+
+    // 6. Date & Time
+    const rawDate = params.get("date");
     let formattedDate = new Date().toLocaleDateString('en-GB', {
         day: 'numeric',
         month: 'long',
@@ -31,11 +64,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Populate elements on the DOM
-    document.getElementById("val-amount").textContent = `৳${amount}`;
-    document.getElementById("val-donor").textContent = donorName;
-    document.getElementById("val-donation-id").textContent = donationId;
-    document.getElementById("val-trx-id").textContent = transactionId;
-    document.getElementById("val-date").textContent = formattedDate;
-    document.getElementById("val-method").textContent = paymentMethod;
+    const dateEl = document.getElementById("val-date");
+    if (dateEl) {
+        dateEl.textContent = formattedDate;
+    }
 });

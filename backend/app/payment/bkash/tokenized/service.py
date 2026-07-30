@@ -85,10 +85,21 @@ class BkashPaymentService:
         if donation is None:
             print("Donation not found in database.")
 
+            # return RedirectResponse(
+            #     url="/frontend/thankyou.html?status=failed",
+            #     status_code=302,
+            # )
             return RedirectResponse(
-                url="/frontend/thankyou.html?status=failed",
-                status_code=302,
-            )
+                url=(
+                    f"/frontend/thankyou.html?"
+                    f"status=failed"
+                    f"&donationID={donation.id}"
+                    f"&name={donation.name}"
+                    f"&trxID={donation.trx_id}"
+                    f"&amount={donation.amount}"
+                    f"&method={donation.payment_method}"
+                )
+)
 
 
         # Customer cancelled
@@ -103,6 +114,8 @@ class BkashPaymentService:
                 url="/frontend/thankyou.html?status=cancelled",
                 status_code=302,
             )
+            
+            
 
 
         # Payment failed
@@ -192,9 +205,20 @@ class BkashPaymentService:
             print("Donation updated successfully.")
             print("Transaction ID:", donation.trx_id)
 
+            # return RedirectResponse(
+            #     url=f"/frontend/thankyou.html?status=success&trxID={donation.trx_id}&amount={result.get('amount')}",
+            #     status_code=302,
+            # )
             return RedirectResponse(
-                url=f"/frontend/thankyou.html?status=success&trxID={donation.trx_id}&amount={result.get('amount')}",
-                status_code=302,
+                url=(
+                    f"/frontend/thankyou.html?"
+                    f"status=success"
+                    f"&donationID={donation.id}"
+                    f"&name={donation.name}"
+                    f"&trxID={donation.trx_id}"
+                    f"&amount={donation.amount}"
+                    f"&method={donation.payment_method}"
+                )
             )
 
 
