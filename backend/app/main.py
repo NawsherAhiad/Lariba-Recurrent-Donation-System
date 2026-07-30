@@ -54,20 +54,23 @@ FRONTEND_DIR = BASE_DIR / "frontend"
 
 
 # Serve donation page at root
+BASE_DIR = Path(__file__).resolve().parent
+FRONTEND_DIR = BASE_DIR / "frontend"
+
+# 1. First: Explicit HTML routes
 @app.get("/")
 async def serve_root():
-    return FileResponse(
-        FRONTEND_DIR / "donation.html"
-    )
+    return FileResponse(FRONTEND_DIR / "donation.html")
 
+@app.get("/thankyou.html")
+async def serve_thankyou():
+    return FileResponse(FRONTEND_DIR / "thankyou.html")
 
-# Serve frontend files:
-# /frontend/thankyou.html
-# /frontend/style.css
-# /frontend/script.js
+# 2. Second: Catch-all static files mounted at root "/"
+# This allows requests like /js/config.js, /css/style.css, and /bkash.png to work directly
 if FRONTEND_DIR.exists():
     app.mount(
-        "/frontend",
-        StaticFiles(directory=str(FRONTEND_DIR)),
+        "/",
+        StaticFiles(directory=str(FRONTEND_DIR), html=True),
         name="frontend"
     )
