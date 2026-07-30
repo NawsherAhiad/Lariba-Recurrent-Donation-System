@@ -7,6 +7,10 @@ from app.payment.bkash.tokenized.schemas import CreatePaymentRequest
 from app.repositories.donation_repository import DonationRepository
 from app.payment.bkash.tokenized.constants import *
 
+from fastapi.responses import RedirectResponse
+import json
+
+
 class BkashPaymentService:
 
     def __init__(self, db: Session):
@@ -38,7 +42,6 @@ class BkashPaymentService:
         print(data)
 
         return await self.client.post(
-            # endpoint="/tokenized/checkout/create",
             endpoint=CREATE_PAYMENT,
             payload=data,
         )
@@ -53,7 +56,6 @@ class BkashPaymentService:
         }
 
         return await self.client.post(
-            # endpoint="/tokenized/checkout/execute",
             endpoint=EXECUTE_PAYMENT,
             payload=data,
         )
@@ -81,10 +83,11 @@ class BkashPaymentService:
 
         if donation is None:
             print("Donation not found in database.")
-            return {
-                "success": False,
-                "message": "Donation not found.",
-            }
+
+            return RedirectResponse(
+                url="/frontend/payment-result.html?status=failed",
+                status_code=302,
+            )
 
         # Customer cancelled
         if status == "cancel":
@@ -94,10 +97,10 @@ class BkashPaymentService:
             donation.payment_status = PaymentStatus.cancelled
             self.repository.update(donation)
 
-            return {
-                "success": False,
-                "message": "Payment cancelled.",
-            }
+            return RedirectResponse(
+                url="/frontend/payment-result.html?status=cancelled",
+                status_code=302,
+            )
 
         # Payment failed
         if status == "failure":
@@ -107,31 +110,30 @@ class BkashPaymentService:
             donation.payment_status = PaymentStatus.failed
             self.repository.update(donation)
 
-            return {
-                "success": False,
-                "message": "Payment failed.",
-            }
+            return RedirectResponse(
+                url="/frontend/payment-result.html?status=failed",
+                status_code=302,
+            )
 
         # Unknown callback
         if status != "success":
 
             print("Unknown callback status:", status)
 
-            return {
-                "success": False,
-                "message": f"Unknown status: {status}",
-            }
+            return RedirectResponse(
+                url="/frontend/payment-result.html?status=unknown",
+                status_code=302,
+            )
 
         # Already completed
         if donation.payment_status == PaymentStatus.completed:
 
             print("Payment already completed.")
 
-            return {
-                "success": True,
-                "message": "Payment already processed.",
-                "trxID": donation.trx_id,
-            }
+            return RedirectResponse(
+                url=f"/frontend/payment-result.html?status=success&trxID={donation.trx_id}",
+                status_code=302,
+            )
 
         print("\nExecuting Execute Payment API...")
 
@@ -140,7 +142,7 @@ class BkashPaymentService:
             result = await self.execute_payment(payment_id)
 
             print("\n========== EXECUTE PAYMENT RESPONSE ==========")
-            print(result)
+            print(json.dumps(result, indent=4))
 
         except Exception as e:
 
@@ -152,28 +154,24 @@ class BkashPaymentService:
             result = await self.query_payment(payment_id)
 
             print("\n========== QUERY PAYMENT RESPONSE ==========")
-            print(result)
+            print(json.dumps(result, indent=4))
 
-        # -----------------------------
-        # Read response values
-        # -----------------------------
 
         status_code = result.get("statusCode")
         transaction_status = result.get("transactionStatus")
+
 
         if status_code != "0000":
 
             print("bKash returned an error.")
 
-            return {
-                "success": False,
-                "message": result.get("statusMessage"),
-                "payment": result,
-            }
+            return RedirectResponse(
+                url="/frontend/payment-result.html?status=failed",
+                status_code=302,
+            )
 
-        # -----------------------------
+
         # Update database
-        # -----------------------------
 
         if transaction_status == "Completed":
 
@@ -184,43 +182,42 @@ class BkashPaymentService:
 
             print("Donation updated successfully.")
 
-            return {
-                "success": True,
-                "message": "Payment completed.",
-                "payment": result,
-            }
+            return RedirectResponse(
+                url=f"/frontend/payment-result.html?status=success&trxID={donation.trx_id}&amount={result.get('amount')}",
+                status_code=302,
+            )
+
 
         elif transaction_status == "Initiated":
 
             donation.payment_status = PaymentStatus.pending
             self.repository.update(donation)
 
-            return {
-                "success": False,
-                "message": "Payment is still pending.",
-                "payment": result,
-            }
+            return RedirectResponse(
+                url="/frontend/payment-result.html?status=pending",
+                status_code=302,
+            )
+
 
         elif transaction_status in ("Cancelled", "Failed"):
 
             donation.payment_status = PaymentStatus.failed
             self.repository.update(donation)
 
-            return {
-                "success": False,
-                "message": "Payment failed.",
-                "payment": result,
-            }
+            return RedirectResponse(
+                url="/frontend/payment-result.html?status=failed",
+                status_code=302,
+            )
+
 
         else:
 
-            return {
-                "success": False,
-                "message": "Unknown transaction status.",
-                "payment": result,
-            }
-    
-    
+            return RedirectResponse(
+                url="/frontend/payment-result.html?status=unknown",
+                status_code=302,
+            )
+
+
     async def query_payment(
         self,
         payment_id: str,
@@ -229,20 +226,20 @@ class BkashPaymentService:
         data = {
             "paymentID": payment_id,
         }
-        
+
         print("\n========== QUERY PAYMENT ==========")
         print(data)
 
         result = await self.client.post(
-            # endpoint="/tokenized/checkout/payment/status",
             endpoint=QUERY_PAYMENT,
             payload=data,
         )
-        
-        print(result)
+
+        print(json.dumps(result, indent=4))
+
         return result
-    
-    
+
+
     async def search_transaction(
         self,
         trx_id: str,
@@ -253,7 +250,6 @@ class BkashPaymentService:
         }
 
         return await self.client.post(
-            # endpoint="/tokenized/checkout/general/searchTransaction",
             endpoint=SEARCH_TRANSACTION,
             payload=data,
         )

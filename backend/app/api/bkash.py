@@ -68,6 +68,10 @@ async def callback(
     status: str = Query(...),
     db: Session = Depends(get_db),
 ):
+    print("===== BKASH CALLBACK =====")
+    print(dict(request.query_params))
+    print("==========================")
+    
     service = BkashPaymentService(db)
 
     return await service.handle_callback(
